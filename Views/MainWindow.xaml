@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CryptoInfo" xmlns:vm="clr-namespace:CryptoInfo.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" ResizeMode="NoResize">
+        Title="CryptoInfo" Height="650" Width="1000" ResizeMode="CanMinimize">
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
@@ -28,9 +28,14 @@
             </MenuItem>
         </Menu>
         <TabControl Margin="0,5,0,0">
-            <TabItem Header="Top of Cryptos"></TabItem>
-            <TabItem Header="Search"></TabItem>
+            <TabItem Header="Top of Cryptos">
+                <Frame Source="/Views/TopOfCryptosPage.xaml"/>
+            </TabItem>
+            <TabItem Header="Search">
+                <Frame Source="/Views/SearchCryptoPage.xaml"/>
+            </TabItem>
             <TabItem Header="Convert values"></TabItem>
+            
         </TabControl>
     </DockPanel>
 </Window>
