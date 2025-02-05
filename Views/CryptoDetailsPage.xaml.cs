@@ -4,11 +4,11 @@
 namespace CryptoInfo.Views
 {
     /// <summary>
-    /// Логика взаимодействия для TopOfCryptosPage.xaml
+    /// Логика взаимодействия для CryptoDetailsPage.xaml
     /// </summary>
-    public partial class TopOfCryptosPage : Page
+    public partial class CryptoDetailsPage : Page
     {
-        public TopOfCryptosPage()
+        public CryptoDetailsPage()
         {
             InitializeComponent();
         }

@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using CryptoInfo.Helpers.Commands;
 
 namespace CryptoInfo.ViewModels
@@ -12,7 +11,6 @@ namespace CryptoInfo.ViewModels
 
         public ICommand ToggleThemeCommand { get; set; }
         public ICommand ChangeLanguageCommand { get; set; }
-
 
         public MainWindowViewModel()
         {

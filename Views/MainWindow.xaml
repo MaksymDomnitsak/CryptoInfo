@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CryptoInfo" xmlns:vm="clr-namespace:CryptoInfo.ViewModels"
+        xmlns:localview="clr-namespace:CryptoInfo.Views"
         mc:Ignorable="d"
         Title="CryptoInfo" Height="650" Width="1000" ResizeMode="CanMinimize">
     <Window.DataContext>
@@ -27,15 +28,15 @@
                 <MenuItem Header="About..."/>
             </MenuItem>
         </Menu>
-        <TabControl Margin="0,5,0,0">
+        <TabControl x:Name="MainTabControl" Margin="0,5,0,0">
             <TabItem Header="Top of Cryptos">
-                <Frame Source="/Views/TopOfCryptosPage.xaml"/>
+                <Frame x:Name="TopOfCryptos" Source="/Views/TopOfCryptosPage.xaml" NavigationUIVisibility="Hidden"/>
             </TabItem>
             <TabItem Header="Search">
-                <Frame Source="/Views/SearchCryptoPage.xaml"/>
+                <Frame x:Name="SearchCrypto" Source="/Views/SearchCryptoPage.xaml" NavigationUIVisibility="Hidden"/>
             </TabItem>
             <TabItem Header="Convert values"></TabItem>
-            
+
         </TabControl>
     </DockPanel>
 </Window>

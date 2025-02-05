@@ -1,24 +1,24 @@
 ﻿using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using CryptoInfo.Models;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Windows.Input;
+using CryptoInfo.Views;
+using CryptoInfo.Helpers.Commands;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Navigation;
+using System.Reflection;
 
 namespace CryptoInfo.ViewModels
 {
     internal class TopOfCryptosViewModel : BaseViewModel
     {
-        private ObservableCollection<Cryptocurrency> _cryptocurrencies;
-        public ObservableCollection<Cryptocurrency> Cryptocurrencies
+        private ObservableCollection<CryptoCoinCap> _cryptocurrencies;
+        public ObservableCollection<CryptoCoinCap> Cryptocurrencies
         {
             get => _cryptocurrencies;
-            set
-            {
-                _cryptocurrencies = value;
-                OnPropertyChanged(nameof(Cryptocurrencies));
-            }
+            set => Set(ref _cryptocurrencies, value);
         }
 
         private int _cryptoViewLimit = 20;
@@ -26,16 +26,15 @@ namespace CryptoInfo.ViewModels
         public int CryptoViewLimit
         {
             get => _cryptoViewLimit;
-            set
-            {
-                _cryptoViewLimit = value;
-                OnPropertyChanged(nameof(CryptoViewLimit));
-            }
+            set => Set(ref _cryptoViewLimit, value);
         }
+
+        public ICommand NavigateToDetailsCommand { get; }
 
         public TopOfCryptosViewModel() 
         {
-            Cryptocurrencies = new ObservableCollection<Cryptocurrency>();
+            NavigateToDetailsCommand = new RelayCommand(NavigateToDetails);
+            Cryptocurrencies = new ObservableCollection<CryptoCoinCap>();
             LoadCryptocurrenciesAsync();
         }
 
@@ -54,17 +53,18 @@ namespace CryptoInfo.ViewModels
                     Cryptocurrencies.Clear();
                     foreach (var item in cryptos)
                     {
-                        Cryptocurrency crypto = new Cryptocurrency
+                        CryptoCoinCap crypto = new CryptoCoinCap
                         {
+                            Id = item["id"].ToString(),
                             Name = item["name"].ToString(),
                             Symbol = item["symbol"].ToString(),
-                            MarketCapUsd = item["marketCapUsd"].ToString(),
                             Supply = item["supply"].ToString(),
                             PriceUsd = item["priceUsd"].ToString()
                         };
 
                         Cryptocurrencies.Add(crypto);
                     }
+
                 }
             }
             catch (Exception ex)
@@ -72,5 +72,32 @@ namespace CryptoInfo.ViewModels
                 Console.WriteLine($"Error fetching data: {ex.Message}");
             }
         }
+
+        private void NavigateToDetails(object? cryptoName)
+        {
+            string? name = cryptoName as string;
+            if (!string.IsNullOrEmpty(name))
+            {
+                var detailsPage = new CryptoDetailsPage();
+                var viewModel = (CryptoDetailsViewModel)detailsPage.DataContext;
+                viewModel.previousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel","");
+                viewModel?.LoadCryptoData(name);
+                if (Application.Current.MainWindow is not NavigationWindow navWindow)
+                {
+                    Frame? frame = FindNavigationFrame(viewModel.previousPage);
+                    frame?.Navigate(detailsPage);
+                }
+            }
+        }
+
+        private Frame? FindNavigationFrame(string frameName)
+        {
+            if (Application.Current.MainWindow is Window mainWindow)
+            {
+                return mainWindow.FindName(frameName) as Frame;
+            }
+            return null;
+        }
+
     }
 }
