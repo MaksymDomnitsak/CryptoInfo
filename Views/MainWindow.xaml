@@ -35,7 +35,6 @@
             <TabItem Header="Search">
                 <Frame x:Name="SearchCrypto" Source="/Views/SearchCryptoPage.xaml" NavigationUIVisibility="Hidden"/>
             </TabItem>
-            <TabItem Header="Convert values"></TabItem>
 
         </TabControl>
     </DockPanel>

@@ -67,10 +67,7 @@ namespace CryptoInfo.ViewModels
 
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching data: {ex.Message}");
-            }
+            catch (Exception ex) { }
         }
 
         private void NavigateToDetails(object? cryptoName)

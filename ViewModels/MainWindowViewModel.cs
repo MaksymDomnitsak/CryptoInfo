@@ -9,6 +9,8 @@ namespace CryptoInfo.ViewModels
 
         private string _CurrentLanguage = "en";
 
+        public string saveSearch = "";
+
         public ICommand ToggleThemeCommand { get; set; }
         public ICommand ChangeLanguageCommand { get; set; }
 

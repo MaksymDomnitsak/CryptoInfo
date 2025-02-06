@@ -15,7 +15,7 @@ namespace CryptoInfo.ViewModels
 {
     internal class SearchCryptoViewModel : BaseViewModel
     {
-        private string? _searchQuery;
+        private string? _searchQuery = "BTC";
         public string? SearchQuery
         {
             get => _searchQuery;
@@ -25,6 +25,10 @@ namespace CryptoInfo.ViewModels
                 if (!string.IsNullOrWhiteSpace(_searchQuery))
                 {
                     _ = SearchCryptoAsync(_searchQuery);
+                }
+                else
+                {
+                    Coins.Clear();
                 }
             }
         }
@@ -38,12 +42,19 @@ namespace CryptoInfo.ViewModels
 
         public ICommand OpenDetailsCommand { get; }
 
+        public ICommand OpenConverterCommand { get; }
+
         public ObservableCollection<CryptoCoinGecko> Coins { get; set; }
 
         public SearchCryptoViewModel()
         {
+            if (!string.IsNullOrWhiteSpace((Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch)){
+                SearchQuery = (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch;
+            }
             Coins = new ObservableCollection<CryptoCoinGecko>();
             OpenDetailsCommand = new RelayCommand(NavigateToDetails); // change name of command
+            OpenConverterCommand = new RelayCommand(NavigateToConverter);
+            SearchCryptoAsync(SearchQuery);
         }
 
         public async Task SearchCryptoAsync(string query)
@@ -91,7 +102,26 @@ namespace CryptoInfo.ViewModels
                 if (Application.Current.MainWindow is not NavigationWindow navWindow)
                 {
                     Frame? frame = FindNavigationFrame(viewModel.previousPage);
+                    (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch = SearchQuery;
                     frame?.Navigate(detailsPage);
+                }
+            }
+        }
+
+        private void NavigateToConverter(object? cryptoName)
+        {
+            string? name = cryptoName as string;
+            if (!string.IsNullOrEmpty(name))
+            {
+                var converterPage = new CurrencyConvertPage();
+                var viewModel = (CurrencyConvertViewModel)converterPage.DataContext;
+                viewModel.SelectedCrypto = name;
+                viewModel.previousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
+                if (Application.Current.MainWindow is not NavigationWindow navWindow)
+                {
+                    Frame? frame = FindNavigationFrame(viewModel.previousPage);
+                    (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch = SearchQuery;
+                    frame?.Navigate(converterPage);
                 }
             }
         }

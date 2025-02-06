@@ -31,13 +31,15 @@
              BorderThickness="2" BorderBrush="LightSlateGray"
              Padding="5" Grid.Column="1"/>
             </Grid>
-            <ListBox ItemsSource="{Binding Coins}" Height="400" SelectedItem="{Binding SelectedCoin}">
+            <ListBox ItemsSource="{Binding Coins}" Height="400" SelectedItem="{Binding SelectedCoin}" MouseEnter="ListBox_MouseEnter" MouseLeave="ListBox_MouseLeave">
 
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <EventSetter Event="MouseLeftButtonUp" Handler="ListBoxItem_Click"/>
+                        <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick"/>
                     </Style>
                 </ListBox.ItemContainerStyle>
+                
 
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -50,5 +52,8 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </StackPanel>
+        <StatusBar VerticalAlignment="Bottom" Height="25">
+            <TextBlock Name="StatusBarText" Text="Ready" />
+        </StatusBar>
     </Grid>
 </Page>
