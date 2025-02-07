@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,6 +21,8 @@ namespace CryptoInfo.ViewModels
         private decimal _priceChange;
         public ObservableCollection<MarketInfo> MarketList { get; set; } = new ObservableCollection<MarketInfo>();
 
+        public CandlestickChartViewModel ChartViewModel { get; } = new CandlestickChartViewModel();
+
         public string? Name { get => _name; set => Set(ref _name, value); }
         public string? Symbol { get => _symbol; set => Set(ref _symbol, value); }
         public string ImageUrl { get => _imageUrl; set => Set(ref _imageUrl, value); }
@@ -32,14 +35,18 @@ namespace CryptoInfo.ViewModels
 
         public string previousPage = "";
 
+        public string CurrentId = "";
+
         public CryptoDetailsViewModel()
         {
             GoBackCommand = new RelayCommand(GoBack, CanGoBack);
             OpenMarketCommand = new RelayCommand(OpenMarket);
         }
 
-        public async Task LoadCryptoData(string cryptoName)
+        public async Task LoadCryptoData(string cryptoName) //modify by extra search by name
         {
+            CurrentId = cryptoName;
+            
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -50,6 +57,7 @@ namespace CryptoInfo.ViewModels
                     { "x-cg-demo-api-key", "CG-NX7yLkDvief1DLNfb1sMtmUk" },
                 },
             };
+            ChartViewModel.SelectedCryptoId = cryptoName;
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -74,7 +82,7 @@ namespace CryptoInfo.ViewModels
                         {
                             MarketList.Add(new MarketInfo
                             {
-                                Market = $"{ticker["market"]?["name"]} - {ticker["last"]} USD",
+                                Market = $"{ticker["market"]?["name"]} - {ticker["last"]?.ToString()} USD",
                                 TradeUrl = ticker["trade_url"]?.ToString()
                             });
                         }

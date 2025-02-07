@@ -23,24 +23,22 @@ namespace CryptoInfo.ViewModels
         public ObservableCollection<CryptoSymbol> Cryptos { get; set; } = new();
         public ObservableCollection<string> FiatCurrencies { get; set; } = new();
 
-        public string SelectedCrypto
+        public string? SelectedCrypto
         {
             get => _selectedCrypto;
             set
             {
-                _selectedCrypto = value;
-                OnPropertyChanged(nameof(SelectedCrypto));
+                Set(ref _selectedCrypto, value);     
                 FetchCryptoPrice();
             }
         }
 
-        public string SelectedFiat
+        public string? SelectedFiat
         {
             get => _selectedFiat;
             set
             {
-                _selectedFiat = value;
-                OnPropertyChanged(nameof(SelectedFiat));
+                Set(ref _selectedFiat, value);
                 ConvertCurrency();
             }
         }
@@ -50,7 +48,9 @@ namespace CryptoInfo.ViewModels
             get => _amount;
             set
             {
+                
                 value = value.Replace('.', ',');
+                if (value.IndexOf(',') != value.LastIndexOf(',')) return;
                 if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal result))
                 {
                     _amount = value;
@@ -61,14 +61,10 @@ namespace CryptoInfo.ViewModels
             }
         }
 
-        public string ConvertedAmount
+        public string? ConvertedAmount
         {
             get => _convertedAmount;
-            private set
-            {
-                _convertedAmount = value;
-                OnPropertyChanged(nameof(ConvertedAmount));
-            }
+            set => Set(ref _convertedAmount, value);
         }
 
         public ICommand GoBackCommand { get; }

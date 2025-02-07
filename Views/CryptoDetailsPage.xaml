@@ -13,23 +13,31 @@
         <vm:CryptoDetailsViewModel />
     </Page.DataContext>
 
-    <Grid Margin="20">
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+    <Grid Margin="15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.25*" />
+            <ColumnDefinition Width="0.75*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Stretch">
 
-            <Button Content="← Back" Command="{Binding GoBackCommand}" HorizontalAlignment="Left" Margin="0,0,0,10" />
+            <Button Content="← Back" FontWeight="Bold" Command="{Binding GoBackCommand}" HorizontalAlignment="Left" Padding="3" Margin="0,0,0,10" />
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Image Source="{Binding ImageUrl}" Width="50" Height="50" Margin="0,0,10,0"/>
-                <TextBlock Text="{Binding Name}" FontSize="24" FontWeight="Bold"/>
-                <TextBlock Text=" (" FontSize="24"/>
-                <TextBlock Text="{Binding Symbol}" FontSize="24" FontWeight="Bold"/>
-                <TextBlock Text=")" FontSize="24"/>
+                <Image Source="{Binding ImageUrl}" Width="50" Height="50" Margin="0,0,5,0"/>
+                <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" Width="135">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} ({1})">
+                            <Binding Path="Name"/>
+                            <Binding Path="Symbol"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
             </StackPanel>
 
-            <TextBlock Text="{Binding PriceUsd, StringFormat='Price: {0:C}'}" FontSize="18" Margin="0,10,0,0"/>
+            <TextBlock Text="{Binding PriceUsd, StringFormat='Price: {0:C3}'}" FontSize="18" Margin="0,10,0,0"/>
             <TextBlock Text="{Binding VolumeBtc, StringFormat='Volume: {0}'}" FontSize="18"/>
             <TextBlock Text="{Binding PriceChange, StringFormat='24h Change: {0} %'}" FontSize="18"/>
-            <Expander Header="Markets (Click to Trade)" IsExpanded="False" Margin="0,20,0,0">
+            <Expander Header="Markets (Click to Trade)" IsExpanded="True" Margin="0,15,0,0">
                 <StackPanel>
                     <ItemsControl ItemsSource="{Binding MarketList}">
                         <ItemsControl.ItemTemplate>
@@ -43,6 +51,9 @@
                 </StackPanel>
             </Expander>
 
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+            <local:CandlestickChartUserControl DataContext="{Binding ChartViewModel}"/>
         </StackPanel>
     </Grid>
 </Page>

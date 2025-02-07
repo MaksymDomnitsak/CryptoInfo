@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="CryptoInfo.Views.CandlestickChartUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:oxy="http://oxyplot.org/wpf"
+             xmlns:vm="clr-namespace:CryptoInfo.ViewModels"
+             xmlns:local="clr-namespace:CryptoInfo.Views"
+             mc:Ignorable="d" 
+             Height="Auto" Width="Auto">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <ComboBox ItemsSource="{Binding IntervalOptions}" 
+                      SelectedItem="{Binding SelectedInterval, Mode=TwoWay}" 
+                      Width="100" Margin="10" 
+                      HorizontalAlignment="Right"/>
+
+            <oxy:PlotView Model="{Binding PlotModel}" 
+                          Height="400" Margin="10"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
