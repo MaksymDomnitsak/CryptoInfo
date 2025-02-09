@@ -1,20 +1,22 @@
 ﻿using CryptoInfo.Models;
-using CryptoInfo.Views;
 using System.Collections.ObjectModel;
-using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Navigation;
 using CryptoInfo.Helpers.Commands;
+using CryptoInfo.Services;
+using Microsoft.Extensions.DependencyInjection;
+using CryptoInfo.Services.Interfaces;
 
 
 namespace CryptoInfo.ViewModels
 {
-    internal class SearchCryptoViewModel : BaseViewModel
+    public class SearchCryptoViewModel : BaseViewModel
     {
+        private readonly ConnectToApiService _apiService;
+
         private string? _searchQuery = "BTC";
         public string? SearchQuery
         {
@@ -46,45 +48,36 @@ namespace CryptoInfo.ViewModels
 
         public ObservableCollection<CryptoCoinGecko> Coins { get; set; }
 
-        public SearchCryptoViewModel()
+        public SearchCryptoViewModel(ConnectToApiServiceFactory service)
         {
-            if (!string.IsNullOrWhiteSpace((Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch)){
-                SearchQuery = (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch;
+            _apiService = service.Create("CoinGecko");
+            if (Application.Current.MainWindow is not null)
+            {
+                if (!string.IsNullOrWhiteSpace((Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch))
+                {
+                    SearchQuery = (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch;
+                }
             }
             Coins = new ObservableCollection<CryptoCoinGecko>();
-            OpenDetailsCommand = new RelayCommand(NavigateToDetails); // change name of command
+            OpenDetailsCommand = new RelayCommand(NavigateToDetails);
             OpenConverterCommand = new RelayCommand(NavigateToConverter);
             SearchCryptoAsync(SearchQuery);
         }
 
         public async Task SearchCryptoAsync(string query)
         {
-            HttpClient _httpClient = new();
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://api.coingecko.com/api/v3/search?query={query}"),
-                Headers =
-                {
-                    { "accept", "application/json" },
-                    { "x-cg-demo-api-key", "CG-NX7yLkDvief1DLNfb1sMtmUk" },
-                },
-            };
             try
             {
-                using (var response = await _httpClient.SendAsync(request))
+                string uri = $"https://api.coingecko.com/api/v3/search?query={query}";
+                var body = await _apiService.LoadDataFromApi(uri);
+                var result = JsonSerializer.Deserialize<CryptoSearchResult>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (result?.Coins != null)
                 {
-                    response.EnsureSuccessStatusCode();
-                    var body = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<CryptoSearchResult>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (result?.Coins != null)
+                    Coins.Clear();
+                    foreach (var coin in result.Coins)
                     {
-                        Coins.Clear();
-                        foreach (var coin in result.Coins)
-                        {
-                            coin.Symbol = "(" + coin.Symbol + ")";
-                            Coins.Add(coin);
-                        }
+                        coin.Symbol = "(" + coin.Symbol + ")";
+                        Coins.Add(coin);
                     }
                 }
             }
@@ -95,16 +88,14 @@ namespace CryptoInfo.ViewModels
             string? name = cryptoName as string;
             if (!string.IsNullOrEmpty(name))
             {
-                var detailsPage = new CryptoDetailsPage();
+                var factory = App.ServiceProvider.GetRequiredService<ICryptoDetailsPageFactory>();
+                var detailsPage = factory.Create();
                 var viewModel = (CryptoDetailsViewModel)detailsPage.DataContext;
                 viewModel.previousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
                 viewModel?.LoadCryptoData(name);
-                if (Application.Current.MainWindow is not NavigationWindow navWindow)
-                {
-                    Frame? frame = FindNavigationFrame(viewModel.previousPage);
-                    (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch = SearchQuery;
-                    frame?.Navigate(detailsPage);
-                }
+                Frame? frame = FindNavigationFrame(viewModel.previousPage);
+                (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch = SearchQuery;
+                frame?.Navigate(detailsPage);
             }
         }
 
@@ -113,16 +104,14 @@ namespace CryptoInfo.ViewModels
             string? name = cryptoName as string;
             if (!string.IsNullOrEmpty(name))
             {
-                var converterPage = new CurrencyConvertPage();
+                var factory = App.ServiceProvider.GetRequiredService<ICurrencyConvertPageFactory>();
+                var converterPage = factory.Create();
                 var viewModel = (CurrencyConvertViewModel)converterPage.DataContext;
                 viewModel.SelectedCrypto = name;
                 viewModel.previousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
-                if (Application.Current.MainWindow is not NavigationWindow navWindow)
-                {
-                    Frame? frame = FindNavigationFrame(viewModel.previousPage);
-                    (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch = SearchQuery;
-                    frame?.Navigate(converterPage);
-                }
+                Frame? frame = FindNavigationFrame(viewModel.previousPage);
+                (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch = SearchQuery;
+                frame?.Navigate(converterPage);
             }
         }
 
@@ -134,12 +123,5 @@ namespace CryptoInfo.ViewModels
             }
             return null;
         }
-    }
-
- 
-
-    internal class CryptoSearchResult
-    {
-        public List<CryptoCoinGecko>? Coins { get; set; }
     }
 }

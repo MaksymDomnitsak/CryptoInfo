@@ -1,10 +1,16 @@
-﻿using System.Windows.Input;
+﻿using System.Windows.Controls;
+using System.Windows.Input;
 using CryptoInfo.Helpers.Commands;
+using CryptoInfo.Views;
 
 namespace CryptoInfo.ViewModels
 {
-    internal class MainWindowViewModel : BaseViewModel
+    public class MainWindowViewModel : BaseViewModel
     {
+        public Page TopOfCryptosPage { get; }
+
+        public Page SearchCryptoPage { get; }
+
         private string _CurrentTheme = "Light";
 
         private string _CurrentLanguage = "en";
@@ -14,10 +20,12 @@ namespace CryptoInfo.ViewModels
         public ICommand ToggleThemeCommand { get; set; }
         public ICommand ChangeLanguageCommand { get; set; }
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(TopOfCryptosPage page,SearchCryptoPage searchPage)
         {
             ToggleThemeCommand = new RelayCommand(ToggleTheme, CanToggleTheme);
             ChangeLanguageCommand = new RelayCommand(ChangeLanguage, CanChangeLanguage);
+            TopOfCryptosPage = page;
+            SearchCryptoPage = searchPage;
         }
 
         private void ToggleTheme(object? theme)

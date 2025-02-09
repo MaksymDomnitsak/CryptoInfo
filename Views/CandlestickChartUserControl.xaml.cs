@@ -1,11 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using CryptoInfo.ViewModels;
+﻿using System.Windows.Controls;
 
 namespace CryptoInfo.Views
 {
     /// <summary>
-    /// Логика взаимодействия для CandlestickChartUserControl.xaml
+    /// Interaction logic for CandlestickChartUserControl.xaml
     /// </summary>
     public partial class CandlestickChartUserControl : UserControl
     {

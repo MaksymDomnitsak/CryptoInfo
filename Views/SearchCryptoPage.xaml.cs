@@ -2,28 +2,30 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using CryptoInfo.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CryptoInfo.Views
 {
     /// <summary>
-    /// Логика взаимодействия для SearchCryptoPage.xaml
+    /// Interaction logic for SearchCryptoPage.xaml
     /// </summary>
     public partial class SearchCryptoPage : Page
     {
-        public SearchCryptoPage()
+        public SearchCryptoPage(SearchCryptoViewModel viewModel)
         {
+            DataContext = viewModel;
             InitializeComponent();
         }
 
-        private void ListBoxItem_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void ListBoxItem_Click(object sender, MouseButtonEventArgs e)
         {
             if (DataContext is SearchCryptoViewModel viewModel && viewModel.SelectedCoin != null)
             {
-                viewModel.OpenDetailsCommand.Execute(viewModel.SelectedCoin.Id);
+                viewModel.OpenDetailsCommand.Execute(viewModel.SelectedCoin.Name);
             }
         }
 
-        private void ListBoxItem_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void ListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (DataContext is SearchCryptoViewModel viewModel && viewModel.SelectedCoin != null)
             {
@@ -34,7 +36,7 @@ namespace CryptoInfo.Views
         {
             if (StatusBarText != null)
             {
-                StatusBarText.Text = "Натисніть для деталей, двічі клацніть для конвертації цієї валюти";
+                StatusBarText.Text = "Натисніть ЛКМ для деталей, ПКМ для конвертації вибраної валюти";
                 //StatusBarText.Text = "Click for details, double-click for conversion of this crypto";
             }
         }

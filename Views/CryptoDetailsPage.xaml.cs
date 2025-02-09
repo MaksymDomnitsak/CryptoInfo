@@ -1,15 +1,17 @@
 ﻿using System.Windows.Controls;
+using CryptoInfo.ViewModels;
 
 
 namespace CryptoInfo.Views
 {
     /// <summary>
-    /// Логика взаимодействия для CryptoDetailsPage.xaml
+    /// Interaction logic for CryptoDetailsPage.xaml
     /// </summary>
     public partial class CryptoDetailsPage : Page
     {
-        public CryptoDetailsPage()
+        public CryptoDetailsPage(CryptoDetailsViewModel viewModel)
         {
+            DataContext = viewModel;
             InitializeComponent();
         }
     }

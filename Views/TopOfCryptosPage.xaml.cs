@@ -1,15 +1,18 @@
 ﻿using System.Windows.Controls;
+using CryptoInfo.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace CryptoInfo.Views
 {
     /// <summary>
-    /// Логика взаимодействия для TopOfCryptosPage.xaml
+    /// Interaction logic for TopOfCryptosPage.xaml
     /// </summary>
     public partial class TopOfCryptosPage : Page
     {
-        public TopOfCryptosPage()
+        public TopOfCryptosPage(TopOfCryptosViewModel viewModel)
         {
+            DataContext = viewModel;
             InitializeComponent();
         }
     }

@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using CryptoInfo.ViewModels;
+
 
 namespace CryptoInfo
 {
@@ -7,8 +9,9 @@ namespace CryptoInfo
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(MainWindowViewModel viewModel)
         {
+            DataContext = viewModel;
             InitializeComponent();
         }
     }

@@ -10,9 +10,9 @@
              Height="Auto" Width="Auto">
     <Grid>
         <StackPanel Orientation="Vertical">
-            <ComboBox ItemsSource="{Binding IntervalOptions}" 
+            <ComboBox ToolTipService.InitialShowDelay="1" ToolTipService.Placement="Top" ToolTip="Count of days visible on chart" ItemsSource="{Binding IntervalOptions}" 
                       SelectedItem="{Binding SelectedInterval, Mode=TwoWay}" 
-                      Width="100" Margin="10" 
+                      Width="50" Margin="10" 
                       HorizontalAlignment="Right"/>
 
             <oxy:PlotView Model="{Binding PlotModel}" 

@@ -11,7 +11,7 @@ using CryptoInfo.Models;
 
 namespace CryptoInfo.ViewModels
 {
-    internal class CurrencyConvertViewModel : BaseViewModel
+    public class CurrencyConvertViewModel : BaseViewModel
     {
         private readonly HttpClient _httpClient = new();
         private string? _selectedCrypto;

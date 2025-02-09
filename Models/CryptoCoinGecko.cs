@@ -1,6 +1,6 @@
 ﻿namespace CryptoInfo.Models
 {
-    internal class CryptoCoinGecko
+    public class CryptoCoinGecko
     {
         public string? Id { get; set; }
         public string? Name { get; set; }

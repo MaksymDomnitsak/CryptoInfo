@@ -9,10 +9,6 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="CryptoDetailsPage">
 
-    <Page.DataContext>
-        <vm:CryptoDetailsViewModel />
-    </Page.DataContext>
-
     <Grid Margin="15">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.25*" />
@@ -35,7 +31,7 @@
             </StackPanel>
 
             <TextBlock Text="{Binding PriceUsd, StringFormat='Price: {0:C3}'}" FontSize="18" Margin="0,10,0,0"/>
-            <TextBlock Text="{Binding VolumeBtc, StringFormat='Volume: {0}'}" FontSize="18"/>
+            <TextBlock Text="{Binding VolumeUsd, StringFormat='Volume: {0}'}" FontSize="18"/>
             <TextBlock Text="{Binding PriceChange, StringFormat='24h Change: {0} %'}" FontSize="18"/>
             <Expander Header="Markets (Click to Trade)" IsExpanded="True" Margin="0,15,0,0">
                 <StackPanel>

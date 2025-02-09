@@ -7,32 +7,41 @@ using CryptoInfo.Views;
 using CryptoInfo.Helpers.Commands;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 using System.Reflection;
+using CryptoInfo.Services;
+using Microsoft.Extensions.DependencyInjection;
+using CryptoInfo.Services.Interfaces;
 
 namespace CryptoInfo.ViewModels
 {
-    internal class TopOfCryptosViewModel : BaseViewModel
+    public class TopOfCryptosViewModel : BaseViewModel
     {
+        private readonly ConnectToApiService _apiService;
         private ObservableCollection<CryptoCoinCap> _cryptocurrencies;
+        public ObservableCollection<int> CryptoLimits { get; } = new ObservableCollection<int> { 10, 20 };
         public ObservableCollection<CryptoCoinCap> Cryptocurrencies
         {
             get => _cryptocurrencies;
             set => Set(ref _cryptocurrencies, value);
         }
 
-        private int _cryptoViewLimit = 20;
+        private int _cryptoViewLimit = 10;
 
         public int CryptoViewLimit
         {
             get => _cryptoViewLimit;
-            set => Set(ref _cryptoViewLimit, value);
+            set
+            {
+                Set(ref _cryptoViewLimit, value);
+                LoadCryptocurrenciesAsync();
+            }
         }
 
         public ICommand NavigateToDetailsCommand { get; }
 
-        public TopOfCryptosViewModel() 
+        public TopOfCryptosViewModel(ConnectToApiServiceFactory service) 
         {
+            _apiService = service.Create();
             NavigateToDetailsCommand = new RelayCommand(NavigateToDetails);
             Cryptocurrencies = new ObservableCollection<CryptoCoinCap>();
             LoadCryptocurrenciesAsync();
@@ -42,29 +51,22 @@ namespace CryptoInfo.ViewModels
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                string url = "https://api.coincap.io/v2/assets?limit="+CryptoViewLimit+"&offset=0";                   
+                var response = await _apiService.LoadDataFromApi(url);
+                JObject data = JObject.Parse(response);
+                JArray cryptos = (JArray)data["data"];
+                Cryptocurrencies.Clear();
+                foreach (var item in cryptos)
                 {
-                    string url = "https://api.coincap.io/v2/assets?limit="+CryptoViewLimit+"&offset=0";
-
-                    var response = await client.GetStringAsync(url);
-                    JObject data = JObject.Parse(response);
-                    JArray cryptos = (JArray)data["data"];
-
-                    Cryptocurrencies.Clear();
-                    foreach (var item in cryptos)
+                    CryptoCoinCap crypto = new CryptoCoinCap
                     {
-                        CryptoCoinCap crypto = new CryptoCoinCap
-                        {
-                            Id = item["id"].ToString(),
-                            Name = item["name"].ToString(),
-                            Symbol = item["symbol"].ToString(),
-                            Supply = item["supply"].ToString(),
-                            PriceUsd = item["priceUsd"].ToString()
-                        };
+                        Rank = item["rank"].ToString(),
+                        Name = item["name"].ToString(),
+                        Symbol = item["symbol"].ToString(),
+                        PriceUsd = item["priceUsd"].ToString()
+                    };
 
-                        Cryptocurrencies.Add(crypto);
-                    }
-
+                    Cryptocurrencies.Add(crypto);
                 }
             }
             catch (Exception ex) { }
@@ -75,15 +77,13 @@ namespace CryptoInfo.ViewModels
             string? name = cryptoName as string;
             if (!string.IsNullOrEmpty(name))
             {
-                var detailsPage = new CryptoDetailsPage();
+                var factory = App.ServiceProvider.GetRequiredService<ICryptoDetailsPageFactory>();
+                CryptoDetailsPage detailsPage = factory.Create();
                 var viewModel = (CryptoDetailsViewModel)detailsPage.DataContext;
-                viewModel.previousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel","");
+                viewModel.previousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
                 viewModel?.LoadCryptoData(name);
-                if (Application.Current.MainWindow is not NavigationWindow navWindow)
-                {
-                    Frame? frame = FindNavigationFrame(viewModel.previousPage);
-                    frame?.Navigate(detailsPage);
-                }
+                Frame? frame = FindNavigationFrame(viewModel.previousPage);
+                frame?.Navigate(detailsPage);
             }
         }
 

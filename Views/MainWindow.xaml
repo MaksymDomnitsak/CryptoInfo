@@ -3,14 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CryptoInfo" xmlns:vm="clr-namespace:CryptoInfo.ViewModels"
-        xmlns:localview="clr-namespace:CryptoInfo.Views"
+        xmlns:local="clr-namespace:CryptoInfo"
         mc:Ignorable="d"
         Title="CryptoInfo" Height="650" Width="1000" ResizeMode="CanMinimize">
-    <Window.DataContext>
-        <vm:MainWindowViewModel />
-    </Window.DataContext>
-
 
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -28,12 +23,12 @@
                 <MenuItem Header="About..."/>
             </MenuItem>
         </Menu>
-        <TabControl x:Name="MainTabControl" Margin="0,5,0,0">
+        <TabControl x:Name="MainTabControl" Margin="0,5,0,0" SelectedItem="Top">
             <TabItem Header="Top of Cryptos">
-                <Frame x:Name="TopOfCryptos" Source="/Views/TopOfCryptosPage.xaml" NavigationUIVisibility="Hidden"/>
+                <Frame x:Name="TopOfCryptos" Content="{Binding TopOfCryptosPage}" NavigationUIVisibility="Hidden"/>
             </TabItem>
             <TabItem Header="Search">
-                <Frame x:Name="SearchCrypto" Source="/Views/SearchCryptoPage.xaml" NavigationUIVisibility="Hidden"/>
+                <Frame x:Name="SearchCrypto" Content="{Binding SearchCryptoPage}" NavigationUIVisibility="Hidden"/>
             </TabItem>
 
         </TabControl>

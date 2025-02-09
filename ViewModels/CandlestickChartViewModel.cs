@@ -1,5 +1,4 @@
-﻿
-using OxyPlot.Axes;
+﻿using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot;
 using System.Collections.ObjectModel;
@@ -8,11 +7,11 @@ using System.Text.Json;
 
 namespace CryptoInfo.ViewModels
 {
-    internal class CandlestickChartViewModel: BaseViewModel
+    public class CandlestickChartViewModel: BaseViewModel
     {
-        private PlotModel _plotModel;
+        private PlotModel? _plotModel;
         private string _selectedInterval = "1";
-        private string _selectedCryptoId;
+        private string? _selectedCryptoId;
 
         public ObservableCollection<string> IntervalOptions { get; } = new ObservableCollection<string> { "1", "7", "14" };
 
@@ -29,7 +28,7 @@ namespace CryptoInfo.ViewModels
             }
         }
 
-        public string SelectedCryptoId
+        public string? SelectedCryptoId
         {
             get => _selectedCryptoId;
             set
@@ -39,14 +38,10 @@ namespace CryptoInfo.ViewModels
             }
         }
 
-        public PlotModel PlotModel
+        public PlotModel? PlotModel
         {
             get => _plotModel;
             set => Set(ref _plotModel, value);
-        }
-
-        public CandlestickChartViewModel()
-        {
         }
 
         public async void LoadChartData()
@@ -72,7 +67,7 @@ namespace CryptoInfo.ViewModels
 
                 if (ohlcData != null)
                 {
-                    var newModel = new PlotModel { Title = $"{SelectedCryptoId.ToUpper()} - Candlestick Chart" };
+                    var newModel = new PlotModel { Title = $"{SelectedCryptoId} - Candlestick Chart" };
 
                     var dateAxis = new DateTimeAxis
                     {
@@ -123,7 +118,7 @@ namespace CryptoInfo.ViewModels
                         MajorGridlineStyle = LineStyle.Solid,
                         MinorGridlineStyle = LineStyle.Dot
                     };
-                    var newModel = new PlotModel { Title = $"{SelectedCryptoId.ToUpper()} - Candlestick Chart" };
+                    var newModel = new PlotModel { Title = $"{SelectedCryptoId} - Candlestick Chart" };
                     newModel.Axes.Add(dateAxis);
                     newModel.Axes.Add(priceAxis);
                     PlotModel = newModel;
