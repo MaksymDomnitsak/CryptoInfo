@@ -5,8 +5,6 @@ using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text.Json;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CryptoInfo.ViewModels
@@ -21,9 +19,11 @@ namespace CryptoInfo.ViewModels
         private decimal _priceChange;
 
         private readonly ConnectToApiService _apiService;
+
+        private string? _previousPage = "";
         public ObservableCollection<MarketInfo> MarketList { get; set; } = new ObservableCollection<MarketInfo>();
 
-        public CandlestickChartViewModel ChartViewModel { get; } = new CandlestickChartViewModel();
+        public CandlestickChartViewModel ChartViewModel { get; }
 
         public string? Name { get => _name; set => Set(ref _name, value); }
         public string? Symbol { get => _symbol; set => Set(ref _symbol, value); }
@@ -31,18 +31,22 @@ namespace CryptoInfo.ViewModels
         public decimal PriceUsd { get => _priceUsd; set => Set(ref _priceUsd, value); }
         public string? VolumeUsd { get => _volumeUsd; set => Set(ref _volumeUsd, value); }
         public decimal PriceChange { get => _priceChange; set => Set(ref _priceChange, value); }
+        public string? PreviousPage
+        {
+            get => _previousPage;
+            set => Set(ref _previousPage, value);
+        }
 
         public ICommand OpenMarketCommand { get; }
         public ICommand GoBackCommand { get; }
-
-        public string previousPage = "";
 
         public string CurrentId = "";
 
         public CryptoDetailsViewModel(ConnectToApiServiceFactory service)
         {
             _apiService = service.Create("CoinGecko");
-            GoBackCommand = new RelayCommand(GoBack, CanGoBack);
+            ChartViewModel = new CandlestickChartViewModel(service);
+            GoBackCommand = new RelayCommand(NavigateCommands.GoBack, NavigateCommands.CanGoBack);
             OpenMarketCommand = new RelayCommand(OpenMarket);
         }
 
@@ -85,9 +89,7 @@ namespace CryptoInfo.ViewModels
                 }
             }
             catch (Exception ex)
-            {
-                Console.WriteLine($"Error loading data: {ex.Message}");
-            }
+            { }
         }
 
         private void OpenMarket(object? url)
@@ -106,20 +108,6 @@ namespace CryptoInfo.ViewModels
                 }
                 catch { }
             }
-        }
-
-        private void GoBack(object? temp)
-        {
-            if (Application.Current.MainWindow is Window mainWindow && mainWindow.FindName(previousPage) != null)
-            {
-                Frame? frame = mainWindow.FindName(previousPage) as Frame;
-                frame.GoBack();
-            }
-        }
-
-        private bool CanGoBack(object? temp)
-        {    
-            return Application.Current.MainWindow is Window mainWindow && mainWindow.FindName(previousPage) != null;
         }
     }
 

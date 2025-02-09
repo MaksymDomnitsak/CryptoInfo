@@ -4,6 +4,7 @@ using OxyPlot;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Text.Json;
+using CryptoInfo.Services;
 
 namespace CryptoInfo.ViewModels
 {
@@ -12,6 +13,7 @@ namespace CryptoInfo.ViewModels
         private PlotModel? _plotModel;
         private string _selectedInterval = "1";
         private string? _selectedCryptoId;
+        private ConnectToApiService _service;
 
         public ObservableCollection<string> IntervalOptions { get; } = new ObservableCollection<string> { "1", "7", "14" };
 
@@ -44,25 +46,17 @@ namespace CryptoInfo.ViewModels
             set => Set(ref _plotModel, value);
         }
 
+        public CandlestickChartViewModel(ConnectToApiServiceFactory factory)
+        {
+            _service = factory.Create("CoinGecko");
+        }
+
         public async void LoadChartData()
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://api.coingecko.com/api/v3/coins/{SelectedCryptoId}/ohlc?vs_currency=usd&days={SelectedInterval}&precision=5"),
-                Headers =
-                {
-                    { "accept", "application/json" },
-                    { "x-cg-demo-api-key", "CG-NX7yLkDvief1DLNfb1sMtmUk" },
-                },
-            };
-
-            using HttpClient client = new HttpClient();
+            string uri = $"https://api.coingecko.com/api/v3/coins/{SelectedCryptoId}/ohlc?vs_currency=usd&days={SelectedInterval}&precision=5";
             try
             {
-                var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                string json = await response.Content.ReadAsStringAsync();
+                string json = await _service.LoadDataFromApi(uri);
                 var ohlcData = JsonSerializer.Deserialize<double[][]>(json);
 
                 if (ohlcData != null)
@@ -126,7 +120,6 @@ namespace CryptoInfo.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading chart data: {ex.Message}");
             }
         }
     }

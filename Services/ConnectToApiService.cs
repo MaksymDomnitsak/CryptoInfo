@@ -43,7 +43,7 @@ namespace CryptoInfo.Services
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadAsStringAsync();
             }
-            catch (Exception)
+            catch (HttpRequestException ex)
             {
                 return string.Empty;
             }

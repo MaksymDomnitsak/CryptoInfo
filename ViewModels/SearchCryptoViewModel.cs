@@ -9,6 +9,7 @@ using CryptoInfo.Helpers.Commands;
 using CryptoInfo.Services;
 using Microsoft.Extensions.DependencyInjection;
 using CryptoInfo.Services.Interfaces;
+using CryptoInfo.Helpers;
 
 
 namespace CryptoInfo.ViewModels
@@ -43,7 +44,6 @@ namespace CryptoInfo.ViewModels
         }
 
         public ICommand OpenDetailsCommand { get; }
-
         public ICommand OpenConverterCommand { get; }
 
         public ObservableCollection<CryptoCoinGecko> Coins { get; set; }
@@ -88,13 +88,12 @@ namespace CryptoInfo.ViewModels
             string? name = cryptoName as string;
             if (!string.IsNullOrEmpty(name))
             {
-                var factory = App.ServiceProvider.GetRequiredService<ICryptoDetailsPageFactory>();
-                var detailsPage = factory.Create();
+                var detailsPage = App.ServiceProvider.GetRequiredService<ICryptoDetailsPageFactory>().Create();
                 var viewModel = (CryptoDetailsViewModel)detailsPage.DataContext;
-                viewModel.previousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
+                viewModel.PreviousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
                 viewModel?.LoadCryptoData(name);
-                Frame? frame = FindNavigationFrame(viewModel.previousPage);
                 (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch = SearchQuery;
+                Frame? frame = NavigationHelper.FindNavigationFrame(viewModel.PreviousPage);               
                 frame?.Navigate(detailsPage);
             }
         }
@@ -104,24 +103,14 @@ namespace CryptoInfo.ViewModels
             string? name = cryptoName as string;
             if (!string.IsNullOrEmpty(name))
             {
-                var factory = App.ServiceProvider.GetRequiredService<ICurrencyConvertPageFactory>();
-                var converterPage = factory.Create();
+                var converterPage = App.ServiceProvider.GetRequiredService<ICurrencyConvertPageFactory>().Create();
                 var viewModel = (CurrencyConvertViewModel)converterPage.DataContext;
                 viewModel.SelectedCrypto = name;
-                viewModel.previousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
-                Frame? frame = FindNavigationFrame(viewModel.previousPage);
+                viewModel.PreviousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
+                Frame? frame = NavigationHelper.FindNavigationFrame(viewModel.PreviousPage);
                 (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch = SearchQuery;
                 frame?.Navigate(converterPage);
             }
-        }
-
-        private Frame? FindNavigationFrame(string frameName)
-        {
-            if (Application.Current.MainWindow is Window mainWindow)
-            {
-                return mainWindow.FindName(frameName) as Frame;
-            }
-            return null;
         }
     }
 }

@@ -1,25 +1,24 @@
 ﻿using CryptoInfo.Helpers.Commands;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
-using System.Net.Http;
 using System.Text.Json;
-using System.Windows.Controls;
-using System.Windows;
 using System.Windows.Input;
-using System.Globalization;
 using CryptoInfo.Models;
+using CryptoInfo.Services;
+using System.Text.RegularExpressions;
 
 namespace CryptoInfo.ViewModels
 {
     public class CurrencyConvertViewModel : BaseViewModel
     {
-        private readonly HttpClient _httpClient = new();
+        private ConnectToApiService _service;
         private string? _selectedCrypto;
         private string? _selectedFiat;
         private string _amount = "";
         private string? _convertedAmount;
         private Dictionary<string, decimal> _priceDictionary = new();
 
+        private string? _previousPage = "";
         public ObservableCollection<CryptoSymbol> Cryptos { get; set; } = new();
         public ObservableCollection<string> FiatCurrencies { get; set; } = new();
 
@@ -48,14 +47,23 @@ namespace CryptoInfo.ViewModels
             get => _amount;
             set
             {
-                
-                value = value.Replace('.', ',');
-                if (value.IndexOf(',') != value.LastIndexOf(',')) return;
-                if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal result))
+                value = Regex.Replace(value, @"[^0-9,]", "");
+                if (value.IndexOf(',') != -1 && value.IndexOf(',') != value.LastIndexOf(',')) return;
+                if (value.IndexOf(',') != -1 && value.Length - value.IndexOf(',') - 1 > 20)
+                {
+                    value = value.Substring(0, value.IndexOf(',') + 21);
+                }
+                if (!string.IsNullOrEmpty(ConvertedAmount) && ConvertedAmount.StartsWith("> 79228162514264337593543950335"))
+                {
+                    if (value.Length < _amount.Length)
+                    {
+                        _amount = value;
+                    }
+                }
+                else
                 {
                     _amount = value;
                 }
-                else _amount = "";
                 OnPropertyChanged(nameof(Amount));
                 ConvertCurrency();
             }
@@ -67,41 +75,32 @@ namespace CryptoInfo.ViewModels
             set => Set(ref _convertedAmount, value);
         }
 
+        public string? PreviousPage
+        {
+            get => _previousPage;
+            set => Set(ref _previousPage, value);
+        }
+
         public ICommand GoBackCommand { get; }
 
-        public string previousPage = "";
-
-
-        public CurrencyConvertViewModel()
+        public CurrencyConvertViewModel(ConnectToApiServiceFactory factory)
         {
-            GoBackCommand = new RelayCommand(GoBack, CanGoBack);
+            _service = factory.Create("CoinGecko");
+            GoBackCommand = new RelayCommand(NavigateCommands.GoBack, NavigateCommands.CanGoBack);
             LoadData(); 
         }
 
         private async Task LoadData()
         {
+            string uri = "https://api.coingecko.com/api/v3/simple/supported_vs_currencies";
             try
             {
-                var request = new HttpRequestMessage
+                var body = await _service.LoadDataFromApi(uri);
+                var fiatList = JsonSerializer.Deserialize<List<string>>(body);
+                FiatCurrencies.Clear();
+                foreach (var fiat in fiatList)
                 {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri("https://api.coingecko.com/api/v3/simple/supported_vs_currencies"),
-                    Headers =
-                {
-                    { "accept", "application/json" },
-                    { "x-cg-demo-api-key", "CG-NX7yLkDvief1DLNfb1sMtmUk" },
-                },
-                };
-                using (var response = await _httpClient.SendAsync(request))
-                {
-                    response.EnsureSuccessStatusCode();
-                    var body = await response.Content.ReadAsStringAsync();
-                    var fiatList = JsonSerializer.Deserialize<List<string>>(body);
-                    FiatCurrencies.Clear();
-                    foreach (var fiat in fiatList)
-                    {
-                        FiatCurrencies.Add(fiat.ToUpper());
-                    }
+                    FiatCurrencies.Add(fiat.ToUpper());
                 }
             }
             catch (Exception ex) { }
@@ -109,56 +108,39 @@ namespace CryptoInfo.ViewModels
 
         public async void FetchCryptoPrice()
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://api.coingecko.com/api/v3/coins/{SelectedCrypto}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false"),
-                Headers =
-                {
-                    { "accept", "application/json" },
-                    { "x-cg-demo-api-key", "CG-NX7yLkDvief1DLNfb1sMtmUk" },
-                },
-            };
-            using (var response = await _httpClient.SendAsync(request))
-            {
-                response.EnsureSuccessStatusCode();
-                var body = await response.Content.ReadAsStringAsync();
-                JObject cryptoInfo = JObject.Parse(body);
-                var current_price = cryptoInfo["market_data"]?["current_price"] as JObject;
-                _priceDictionary = current_price?
-                .Properties().ToDictionary(
-                    prop => prop.Name,
-                    prop => prop.Value.Value<decimal>()
-                ) ?? new Dictionary<string, decimal>();
-
-                ConvertCurrency();
+            try { 
+            string uri = $"https://api.coingecko.com/api/v3/coins/{SelectedCrypto}?localization=false" +
+                $"&tickers=false&market_data=true&community_data=false&developer_data=false";
+            var body = await _service.LoadDataFromApi(uri);
+            JObject cryptoInfo = JObject.Parse(body);
+            var current_price = cryptoInfo["market_data"]?["current_price"] as JObject;
+            _priceDictionary = current_price?
+            .Properties().ToDictionary(
+                prop => prop.Name,
+                prop => prop.Value.Value<decimal>()
+            ) ?? new Dictionary<string, decimal>();
+            ConvertCurrency();
             }
+            catch  { }
         }
 
         private void ConvertCurrency()
         {
-            if (_priceDictionary != null && SelectedFiat != null && _priceDictionary.ContainsKey(SelectedFiat.ToLower()))
+            try
             {
-                ConvertedAmount = ((String.IsNullOrEmpty(Amount) ? 0 : Decimal.Parse(Amount)) * _priceDictionary[SelectedFiat.ToLower()]).ToString()+" "+SelectedFiat;
+                if (_priceDictionary != null && SelectedFiat != null && _priceDictionary.ContainsKey(SelectedFiat.ToLower()))
+                {
+                    ConvertedAmount = ((String.IsNullOrEmpty(Amount) ? 0 : Decimal.Parse(Amount)) * _priceDictionary[SelectedFiat.ToLower()]).ToString() + " " + SelectedFiat;
+                }
+                else
+                {
+                    ConvertedAmount = "0";
+                }
             }
-            else
+            catch(Exception ex) 
             {
-                ConvertedAmount = "0";
+                ConvertedAmount = "> 79228162514264337593543950335 " + SelectedFiat;
             }
-        }
-
-        private void GoBack(object? temp)
-        {
-            if (Application.Current.MainWindow is Window mainWindow && mainWindow.FindName(previousPage) != null)
-            {
-                Frame? frame = mainWindow.FindName(previousPage) as Frame;
-                frame.GoBack();
-            }
-        }
-
-        private bool CanGoBack(object? temp)
-        {
-            return Application.Current.MainWindow is Window mainWindow && mainWindow.FindName(previousPage) != null;
         }
     }
 

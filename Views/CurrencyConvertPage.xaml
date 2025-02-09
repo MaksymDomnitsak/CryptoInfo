@@ -11,19 +11,20 @@
         
         
 
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-            <TextBlock FontSize="16" Text="{Binding SelectedCrypto, StringFormat='Selected Cryptocurrency: {0}'}"/>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Selected Cryptocurrency:" HorizontalAlignment="Center" FontSize="16"/>
+            <TextBlock Margin="0,10,0,10" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" Text="{Binding SelectedCrypto}"/>
 
-            <TextBlock Text="Enter Amount:"/>
+            <TextBlock Margin="0,0,0,5" HorizontalAlignment="Center" Text="Enter Amount:"/>
             <TextBox Text="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <TextBlock Text="Select Currency:"/>
+            <TextBlock Margin="0,5,0,5" HorizontalAlignment="Center" Text="Select Currency:"/>
             <ComboBox ItemsSource="{Binding FiatCurrencies}" SelectedItem="{Binding SelectedFiat, Mode=TwoWay}"/>
 
-            <TextBlock Text="Converted Amount:" FontSize="16" FontWeight="Bold"/>
+            <TextBlock Margin="0,5,0,0" HorizontalAlignment="Center" Text="Converted Amount:" FontSize="16" FontWeight="Bold"/>
             <TextBlock Text="{Binding ConvertedAmount}" FontSize="24" HorizontalAlignment="Center" FontWeight="Bold"/>
 
-            <Button Content="← Back" Command="{Binding GoBackCommand}" Margin="0,20,0,10" />
+            <Button FontWeight="ExtraBold" Content="← Back" Command="{Binding GoBackCommand}" CommandParameter="{Binding PreviousPage}" Margin="0,20,0,10" Padding="0,3,0,3" />
         </StackPanel>
     </Grid>
 </Page>

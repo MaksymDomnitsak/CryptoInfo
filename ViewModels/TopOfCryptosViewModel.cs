@@ -1,16 +1,15 @@
 ﻿using System.Collections.ObjectModel;
-using System.Net.Http;
 using CryptoInfo.Models;
 using Newtonsoft.Json.Linq;
 using System.Windows.Input;
 using CryptoInfo.Views;
 using CryptoInfo.Helpers.Commands;
-using System.Windows;
 using System.Windows.Controls;
 using System.Reflection;
 using CryptoInfo.Services;
 using Microsoft.Extensions.DependencyInjection;
 using CryptoInfo.Services.Interfaces;
+using CryptoInfo.Helpers;
 
 namespace CryptoInfo.ViewModels
 {
@@ -18,15 +17,14 @@ namespace CryptoInfo.ViewModels
     {
         private readonly ConnectToApiService _apiService;
         private ObservableCollection<CryptoCoinCap> _cryptocurrencies;
+
+        private int _cryptoViewLimit = 10;
         public ObservableCollection<int> CryptoLimits { get; } = new ObservableCollection<int> { 10, 20 };
         public ObservableCollection<CryptoCoinCap> Cryptocurrencies
         {
             get => _cryptocurrencies;
             set => Set(ref _cryptocurrencies, value);
         }
-
-        private int _cryptoViewLimit = 10;
-
         public int CryptoViewLimit
         {
             get => _cryptoViewLimit;
@@ -80,21 +78,11 @@ namespace CryptoInfo.ViewModels
                 var factory = App.ServiceProvider.GetRequiredService<ICryptoDetailsPageFactory>();
                 CryptoDetailsPage detailsPage = factory.Create();
                 var viewModel = (CryptoDetailsViewModel)detailsPage.DataContext;
-                viewModel.previousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
+                viewModel.PreviousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
                 viewModel?.LoadCryptoData(name);
-                Frame? frame = FindNavigationFrame(viewModel.previousPage);
+                Frame? frame = NavigationHelper.FindNavigationFrame(viewModel.PreviousPage);
                 frame?.Navigate(detailsPage);
             }
         }
-
-        private Frame? FindNavigationFrame(string frameName)
-        {
-            if (Application.Current.MainWindow is Window mainWindow)
-            {
-                return mainWindow.FindName(frameName) as Frame;
-            }
-            return null;
-        }
-
     }
 }
