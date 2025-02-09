@@ -38,6 +38,8 @@ namespace CryptoInfo
             services.AddTransient<CryptoDetailsViewModel>();
             services.AddTransient<CurrencyConvertPage>();
             services.AddTransient<CurrencyConvertViewModel>();
+            services.AddTransient<CandlestickChartViewModel>();
+            services.AddTransient<CandlestickChartUserControl>();
             services.AddTransient<ICurrencyConvertPageFactory, CurrencyConvertPageFactory>();
             services.AddTransient<ICryptoDetailsPageFactory, CryptoDetailsPageFactory>();
         }

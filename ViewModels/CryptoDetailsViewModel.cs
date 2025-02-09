@@ -1,6 +1,7 @@
 ﻿using CryptoInfo.Helpers.Commands;
 using CryptoInfo.Models;
 using CryptoInfo.Services;
+using CryptoInfo.Views;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -23,7 +24,7 @@ namespace CryptoInfo.ViewModels
         private string? _previousPage = "";
         public ObservableCollection<MarketInfo> MarketList { get; set; } = new ObservableCollection<MarketInfo>();
 
-        public CandlestickChartViewModel ChartViewModel { get; }
+        public CandlestickChartUserControl ChartUserControl { get; }
 
         public string? Name { get => _name; set => Set(ref _name, value); }
         public string? Symbol { get => _symbol; set => Set(ref _symbol, value); }
@@ -42,10 +43,10 @@ namespace CryptoInfo.ViewModels
 
         public string CurrentId = "";
 
-        public CryptoDetailsViewModel(ConnectToApiServiceFactory service)
+        public CryptoDetailsViewModel(ConnectToApiServiceFactory service, CandlestickChartUserControl chartUserControl)
         {
             _apiService = service.Create("CoinGecko");
-            ChartViewModel = new CandlestickChartViewModel(service);
+            ChartUserControl = chartUserControl;
             GoBackCommand = new RelayCommand(NavigateCommands.GoBack, NavigateCommands.CanGoBack);
             OpenMarketCommand = new RelayCommand(OpenMarket);
         }
@@ -64,7 +65,7 @@ namespace CryptoInfo.ViewModels
                 uri = $"https://api.coingecko.com/api/v3/coins/{CurrentId}?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false";
             
                 string json = await _apiService.LoadDataFromApi(uri);
-                ChartViewModel.SelectedCryptoId = CurrentId;
+                (ChartUserControl.DataContext as CandlestickChartViewModel).SelectedCryptoId = CurrentId;
                 JObject data = JObject.Parse(json);
 
                 Name = data["name"]?.ToString();

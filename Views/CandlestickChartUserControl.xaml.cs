@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using CryptoInfo.ViewModels;
 
 namespace CryptoInfo.Views
 {
@@ -7,8 +8,9 @@ namespace CryptoInfo.Views
     /// </summary>
     public partial class CandlestickChartUserControl : UserControl
     {
-        public CandlestickChartUserControl()
+        public CandlestickChartUserControl(CandlestickChartViewModel viewModel)
         {
+            DataContext = viewModel;
             InitializeComponent();
         }
     }
