@@ -33,7 +33,7 @@
             <TextBlock Text="{Binding PriceUsd, StringFormat='Price: {0:C3}'}" FontSize="18" Margin="0,10,0,0"/>
             <TextBlock Text="{Binding VolumeUsd, StringFormat='Volume: {0}'}" FontSize="18"/>
             <TextBlock Text="{Binding PriceChange, StringFormat='24h Change: {0} %'}" FontSize="18"/>
-            <Expander Header="Markets (Click to Trade)" IsExpanded="True" Margin="0,15,0,0">
+            <Expander Header="Markets (Click to Trade)" IsExpanded="True" Margin="0,12,0,0">
                 <StackPanel>
                     <ItemsControl ItemsSource="{Binding MarketList}">
                         <ItemsControl.ItemTemplate>

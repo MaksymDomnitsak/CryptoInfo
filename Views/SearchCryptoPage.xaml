@@ -21,7 +21,7 @@
                VerticalAlignment="Center" HorizontalAlignment="Center"
                Grid.Column="0" Margin="5"/>
 
-                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" 
+                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" MouseEnter="TextBox_MouseEnter" MouseLeave="TextBox_MouseLeave"
              Margin="0,10,0,10" FontWeight="Bold"
              BorderThickness="2" BorderBrush="LightSlateGray"
              Padding="5" Grid.Column="1"/>
@@ -30,8 +30,8 @@
 
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
-                        <EventSetter Event="MouseLeftButtonUp" Handler="ListBoxItem_Click"/>
-                        <EventSetter Event="MouseRightButtonUp" Handler="ListBoxItem_MouseDoubleClick"/>
+                        <EventSetter Event="MouseLeftButtonUp" Handler="ListBoxItem_LeftClick"/>
+                        <EventSetter Event="MouseRightButtonUp" Handler="ListBoxItem_RightClick"/>
                     </Style>
                 </ListBox.ItemContainerStyle>
                 
@@ -48,7 +48,7 @@
             </ListBox>
         </StackPanel>
         <StatusBar VerticalAlignment="Bottom" Height="25">
-            <TextBlock Name="StatusBarText" Text="Ready" />
+            <TextBlock Name="StatusBarText" Text="" />
         </StatusBar>
     </Grid>
 </Page>

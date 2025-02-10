@@ -53,9 +53,10 @@ namespace CryptoInfo.ViewModels
             _apiService = service.Create("CoinGecko");
             if (Application.Current.MainWindow is not null)
             {
-                if (!string.IsNullOrWhiteSpace((Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch))
+                var parentDataContext = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+                if (!string.IsNullOrWhiteSpace(parentDataContext.saveSearch))
                 {
-                    SearchQuery = (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch;
+                    SearchQuery = parentDataContext.saveSearch;
                 }
             }
             Coins = new ObservableCollection<CryptoCoinGecko>();
@@ -81,7 +82,10 @@ namespace CryptoInfo.ViewModels
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) 
+            {
+                GeneralMessageBoxForException.Invoke(ex.Message);
+            }
         }
         private void NavigateToDetails(object? cryptoName)
         {
@@ -92,7 +96,8 @@ namespace CryptoInfo.ViewModels
                 var viewModel = (CryptoDetailsViewModel)detailsPage.DataContext;
                 viewModel.PreviousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
                 viewModel?.LoadCryptoData(name);
-                (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch = SearchQuery;
+                var parentDataContext = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+                parentDataContext.saveSearch = SearchQuery;
                 Frame? frame = NavigationHelper.FindNavigationFrame(viewModel.PreviousPage);               
                 frame?.Navigate(detailsPage);
             }
@@ -108,7 +113,8 @@ namespace CryptoInfo.ViewModels
                 viewModel.SelectedCrypto = name;
                 viewModel.PreviousPage = MethodBase.GetCurrentMethod().DeclaringType.Name.Replace("ViewModel", "");
                 Frame? frame = NavigationHelper.FindNavigationFrame(viewModel.PreviousPage);
-                (Application.Current.MainWindow.DataContext as MainWindowViewModel).saveSearch = SearchQuery;
+                var parentDataContext = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+                parentDataContext.saveSearch = SearchQuery;
                 frame?.Navigate(converterPage);
             }
         }

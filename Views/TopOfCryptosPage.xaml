@@ -11,7 +11,7 @@
         <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Orientation="Vertical">
             <ComboBox ToolTipService.InitialShowDelay="1" ToolTipService.Placement="Top" ToolTip="Top count" ItemsSource="{Binding CryptoLimits}" 
                       SelectedItem="{Binding CryptoViewLimit, Mode=TwoWay}" 
-                      Width="50" Margin="1" Height="20"
+                      Width="50" Margin="1,5,5,5" Height="20"
                       HorizontalAlignment="Right" OpacityMask="White">
             </ComboBox>
 

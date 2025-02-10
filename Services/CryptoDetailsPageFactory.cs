@@ -1,5 +1,4 @@
 ﻿using CryptoInfo.Services.Interfaces;
-using CryptoInfo.ViewModels;
 using CryptoInfo.Views;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,4 +1,5 @@
-﻿using CryptoInfo.Helpers.Commands;
+﻿using CryptoInfo.Helpers;
+using CryptoInfo.Helpers.Commands;
 using CryptoInfo.Models;
 using CryptoInfo.Services;
 using CryptoInfo.Views;
@@ -6,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CryptoInfo.ViewModels
@@ -53,9 +55,9 @@ namespace CryptoInfo.ViewModels
 
         public async Task LoadCryptoData(string cryptoName) 
         {
-            string uri = $"https://api.coingecko.com/api/v3/search?query={cryptoName}";
             try
             {
+                string uri = $"https://api.coingecko.com/api/v3/search?query={cryptoName}";
                 var body = await _apiService.LoadDataFromApi(uri);
                 var result = JsonSerializer.Deserialize<CryptoSearchResult>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 if (result?.Coins != null && result?.Coins[0] != null)
@@ -65,16 +67,15 @@ namespace CryptoInfo.ViewModels
                 uri = $"https://api.coingecko.com/api/v3/coins/{CurrentId}?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false";
             
                 string json = await _apiService.LoadDataFromApi(uri);
-                (ChartUserControl.DataContext as CandlestickChartViewModel).SelectedCryptoId = CurrentId;
+                var viewModel = (CandlestickChartViewModel)ChartUserControl.DataContext;
+                viewModel.SelectedCryptoId = CurrentId;
                 JObject data = JObject.Parse(json);
-
                 Name = data["name"]?.ToString();
                 Symbol = data["symbol"]?.ToString();
                 ImageUrl = data["image"]?["small"]?.ToString();
                 PriceUsd = data["market_data"]?["current_price"]?["usd"]?.Value<decimal>() ?? 0;
                 VolumeUsd = (data["market_data"]?["total_volume"]?["usd"]?.Value<string>() ?? "")+" USD";
                 PriceChange = data["market_data"]?["price_change_percentage_24h"]?.Value<decimal>() ?? 0;
-
                 MarketList.Clear();
                 var tickers = data["tickers"]?.Take(10);
                 if (tickers != null)
@@ -90,7 +91,9 @@ namespace CryptoInfo.ViewModels
                 }
             }
             catch (Exception ex)
-            { }
+            {
+                GeneralMessageBoxForException.Invoke(ex.Message);
+            }
         }
 
         private void OpenMarket(object? url)
@@ -98,16 +101,12 @@ namespace CryptoInfo.ViewModels
             string? URL = url as string;
             if (!string.IsNullOrEmpty(URL))
             {
-                try
+                ProcessStartInfo psi = new ProcessStartInfo
                 {
-                    ProcessStartInfo psi = new ProcessStartInfo
-                    {
-                        FileName = URL,
-                        UseShellExecute = true
-                    };
-                    Process.Start(psi);
-                }
-                catch { }
+                    FileName = URL,
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
             }
         }
     }

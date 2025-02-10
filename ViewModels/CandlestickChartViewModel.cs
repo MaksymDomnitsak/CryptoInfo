@@ -4,6 +4,7 @@ using OxyPlot;
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using CryptoInfo.Services;
+using CryptoInfo.Helpers;
 
 namespace CryptoInfo.ViewModels
 {
@@ -119,6 +120,7 @@ namespace CryptoInfo.ViewModels
             }
             catch (Exception ex)
             {
+                GeneralMessageBoxForException.Invoke(ex.Message);
             }
         }
     }

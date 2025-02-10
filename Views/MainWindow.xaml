@@ -8,21 +8,7 @@
         Title="CryptoInfo" Height="650" Width="1000" ResizeMode="CanMinimize">
 
     <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Settings" UseLayoutRounding="True" >
-                <MenuItem Header="Theme">
-                    <MenuItem Header="Light" Command="{Binding ToggleThemeCommand}" CommandParameter="Light" />
-                    <MenuItem Header="Dark" Command="{Binding ToggleThemeCommand}" CommandParameter="Dark" />
-                </MenuItem>
-                <MenuItem Header="Language">
-                    <MenuItem Header="English" Command="{Binding ChangeLanguageCommand}" CommandParameter="en" />
-                    <MenuItem Header="Українська" Command="{Binding ChangeLanguageCommand}" CommandParameter="uk" />
-                </MenuItem>
-            </MenuItem>
-            <MenuItem Header="Help" UseLayoutRounding="True" >
-                <MenuItem Header="About..."/>
-            </MenuItem>
-        </Menu>
+
         <TabControl x:Name="MainTabControl" Margin="0,5,0,0" SelectedItem="Top">
             <TabItem Header="Top of Cryptos">
                 <Frame x:Name="TopOfCryptos" Content="{Binding TopOfCryptosPage}" NavigationUIVisibility="Hidden"/>

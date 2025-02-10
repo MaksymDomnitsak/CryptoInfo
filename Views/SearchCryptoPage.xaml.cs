@@ -1,8 +1,6 @@
-﻿using System.Globalization;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
 using CryptoInfo.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace CryptoInfo.Views
 {
@@ -17,7 +15,7 @@ namespace CryptoInfo.Views
             InitializeComponent();
         }
 
-        private void ListBoxItem_Click(object sender, MouseButtonEventArgs e)
+        private void ListBoxItem_LeftClick(object sender, MouseButtonEventArgs e)
         {
             if (DataContext is SearchCryptoViewModel viewModel && viewModel.SelectedCoin != null)
             {
@@ -25,7 +23,7 @@ namespace CryptoInfo.Views
             }
         }
 
-        private void ListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void ListBoxItem_RightClick(object sender, MouseButtonEventArgs e)
         {
             if (DataContext is SearchCryptoViewModel viewModel && viewModel.SelectedCoin != null)
             {
@@ -36,8 +34,7 @@ namespace CryptoInfo.Views
         {
             if (StatusBarText != null)
             {
-                StatusBarText.Text = "Натисніть ЛКМ для деталей, ПКМ для конвертації вибраної валюти";
-                //StatusBarText.Text = "Click for details, double-click for conversion of this crypto";
+                StatusBarText.Text = "Left-click on crypto for details, right-click for conversion of this crypto";
             }
         }
 
@@ -45,9 +42,27 @@ namespace CryptoInfo.Views
         {
             if (StatusBarText != null)
             {
-                StatusBarText.Text = "Ready";
+                StatusBarText.Text = "";
             }
         }
+
+        private void TextBox_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (StatusBarText != null)
+            {
+                StatusBarText.Text = "Search cryptocurrencies by name or code";
+            }
+        }
+
+        private void TextBox_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (StatusBarText != null)
+            {
+                StatusBarText.Text = "";
+            }
+        }
+
+
 
 
     }

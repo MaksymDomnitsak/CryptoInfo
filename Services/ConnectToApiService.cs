@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net.Http;
+using System.Windows;
 using Microsoft.Extensions.Configuration;
 
 namespace CryptoInfo.Services
@@ -45,6 +46,15 @@ namespace CryptoInfo.Services
             }
             catch (HttpRequestException ex)
             {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show(
+                        "Network Error. Check connection to the Internet and try again",
+                        "Connection Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
+                });
                 return string.Empty;
             }
         }

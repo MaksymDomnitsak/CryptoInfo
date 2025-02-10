@@ -16,11 +16,11 @@ namespace CryptoInfo.ViewModels
     public class TopOfCryptosViewModel : BaseViewModel
     {
         private readonly ConnectToApiService _apiService;
-        private ObservableCollection<CryptoCoinCap> _cryptocurrencies;
+        private ObservableCollection<CryptoCoinCap>? _cryptocurrencies;
 
         private int _cryptoViewLimit = 10;
         public ObservableCollection<int> CryptoLimits { get; } = new ObservableCollection<int> { 10, 20 };
-        public ObservableCollection<CryptoCoinCap> Cryptocurrencies
+        public ObservableCollection<CryptoCoinCap>? Cryptocurrencies
         {
             get => _cryptocurrencies;
             set => Set(ref _cryptocurrencies, value);
@@ -67,7 +67,10 @@ namespace CryptoInfo.ViewModels
                     Cryptocurrencies.Add(crypto);
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception ex) 
+            {
+                GeneralMessageBoxForException.Invoke(ex.Message);
+            }
         }
 
         private void NavigateToDetails(object? cryptoName)

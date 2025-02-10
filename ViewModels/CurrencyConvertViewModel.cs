@@ -6,6 +6,7 @@ using System.Windows.Input;
 using CryptoInfo.Models;
 using CryptoInfo.Services;
 using System.Text.RegularExpressions;
+using CryptoInfo.Helpers;
 
 namespace CryptoInfo.ViewModels
 {
@@ -92,9 +93,9 @@ namespace CryptoInfo.ViewModels
 
         private async Task LoadData()
         {
-            string uri = "https://api.coingecko.com/api/v3/simple/supported_vs_currencies";
             try
             {
+                string uri = "https://api.coingecko.com/api/v3/simple/supported_vs_currencies";
                 var body = await _service.LoadDataFromApi(uri);
                 var fiatList = JsonSerializer.Deserialize<List<string>>(body);
                 FiatCurrencies.Clear();
@@ -103,25 +104,31 @@ namespace CryptoInfo.ViewModels
                     FiatCurrencies.Add(fiat.ToUpper());
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception ex) 
+            {
+                GeneralMessageBoxForException.Invoke(ex.Message);
+            }
         }
 
-        public async void FetchCryptoPrice()
+        private async void FetchCryptoPrice()
         {
-            try { 
-            string uri = $"https://api.coingecko.com/api/v3/coins/{SelectedCrypto}?localization=false" +
-                $"&tickers=false&market_data=true&community_data=false&developer_data=false";
-            var body = await _service.LoadDataFromApi(uri);
-            JObject cryptoInfo = JObject.Parse(body);
-            var current_price = cryptoInfo["market_data"]?["current_price"] as JObject;
-            _priceDictionary = current_price?
-            .Properties().ToDictionary(
-                prop => prop.Name,
-                prop => prop.Value.Value<decimal>()
-            ) ?? new Dictionary<string, decimal>();
-            ConvertCurrency();
+            try
+            {
+                string uri = $"https://api.coingecko.com/api/v3/coins/{SelectedCrypto}?localization=false" +
+                    $"&tickers=false&market_data=true&community_data=false&developer_data=false";
+                var body = await _service.LoadDataFromApi(uri);
+                JObject cryptoInfo = JObject.Parse(body);
+                var current_price = cryptoInfo["market_data"]?["current_price"] as JObject;
+                _priceDictionary = current_price?.Properties().ToDictionary(
+                    prop => prop.Name,
+                    prop => prop.Value.Value<decimal>()
+                ) ?? new Dictionary<string, decimal>();
+                ConvertCurrency();
             }
-            catch  { }
+            catch (Exception ex)
+            {
+                GeneralMessageBoxForException.Invoke(ex.Message);
+            }
         }
 
         private void ConvertCurrency()
@@ -130,7 +137,8 @@ namespace CryptoInfo.ViewModels
             {
                 if (_priceDictionary != null && SelectedFiat != null && _priceDictionary.ContainsKey(SelectedFiat.ToLower()))
                 {
-                    ConvertedAmount = ((String.IsNullOrEmpty(Amount) ? 0 : Decimal.Parse(Amount)) * _priceDictionary[SelectedFiat.ToLower()]).ToString() + " " + SelectedFiat;
+                    ConvertedAmount = ((String.IsNullOrEmpty(Amount) ? 0 : Decimal.Parse(Amount)) 
+                        * _priceDictionary[SelectedFiat.ToLower()]).ToString() + " " + SelectedFiat;
                 }
                 else
                 {
@@ -142,15 +150,5 @@ namespace CryptoInfo.ViewModels
                 ConvertedAmount = "> 79228162514264337593543950335 " + SelectedFiat;
             }
         }
-    }
-
-    public class CryptoMarketData
-    {
-        public MarketData MarketData { get; set; }
-    }
-
-    public class MarketData
-    {
-        public Dictionary<string, decimal> CurrentPrice { get; set; }
     }
 }
