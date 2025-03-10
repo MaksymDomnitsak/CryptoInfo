@@ -3,18 +3,11 @@ using CryptoInfo.Views;
 
 namespace CryptoInfo.ViewModels
 {
-    public class MainWindowViewModel : BaseViewModel
+  public class MainWindowViewModel(TopOfCryptosPage page, SearchCryptoPage searchPage) : BaseViewModel
     {
-        public Page TopOfCryptosPage { get; }
+    public string saveSearch = "";
+    public Page TopOfCryptosPage { get; } = page;
+    public Page SearchCryptoPage { get; } = searchPage;
 
-        public Page SearchCryptoPage { get; }
-
-        public string saveSearch = "";
-
-        public MainWindowViewModel(TopOfCryptosPage page,SearchCryptoPage searchPage)
-        {
-            TopOfCryptosPage = page;
-            SearchCryptoPage = searchPage;
-        }
-    }
+  }
 }

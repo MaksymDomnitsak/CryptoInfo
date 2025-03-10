@@ -3,15 +3,15 @@ using System.Windows;
 
 namespace CryptoInfo.Helpers
 {
-    internal class NavigationHelper
+  internal class NavigationHelper
+  {
+    public static Frame? FindNavigationFrame(string frameName)
     {
-        public static Frame? FindNavigationFrame(string frameName)
-        {
-            if (Application.Current.MainWindow is Window mainWindow)
-            {
-                return mainWindow.FindName(frameName) as Frame;
-            }
-            return null;
-        }
+      if (Application.Current.MainWindow is Window mainWindow)
+      {
+        return mainWindow.FindName(frameName) as Frame;
+      }
+      return null;
     }
+  }
 }

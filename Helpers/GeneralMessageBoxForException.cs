@@ -2,19 +2,19 @@
 
 namespace CryptoInfo.Helpers
 {
-    internal class GeneralMessageBoxForException
+  internal class GeneralMessageBoxForException
+  {
+    public static void Invoke(string message, string caption = "Error")
     {
-        public static void Invoke(string message)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MessageBox.Show(
-                    message,
-                    "Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning
-                );
-            });
-        }
+      Application.Current.Dispatcher.Invoke(() =>
+      {
+        MessageBox.Show(
+                  message,
+                  caption,
+                  MessageBoxButton.OK,
+                  MessageBoxImage.Warning
+              );
+      });
     }
+  }
 }

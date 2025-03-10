@@ -1,8 +1,7 @@
-﻿
-namespace CryptoInfo.Models
+﻿namespace CryptoInfo.Models
 {
-    internal class CryptoSearchResult
-    {
-        public List<CryptoCoinGecko>? Coins { get; set; }
-    }
+  internal class CryptoSearchResult
+  {
+    public List<CryptoCoinGecko>? Coins { get; set; }
+  }
 }

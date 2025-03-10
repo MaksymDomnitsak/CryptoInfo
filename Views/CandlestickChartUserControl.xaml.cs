@@ -3,15 +3,15 @@ using CryptoInfo.ViewModels;
 
 namespace CryptoInfo.Views
 {
-    /// <summary>
-    /// Interaction logic for CandlestickChartUserControl.xaml
-    /// </summary>
-    public partial class CandlestickChartUserControl : UserControl
+  /// <summary>
+  /// Interaction logic for CandlestickChartUserControl.xaml
+  /// </summary>
+  public partial class CandlestickChartUserControl : UserControl
+  {
+    public CandlestickChartUserControl(CandlestickChartViewModel viewModel)
     {
-        public CandlestickChartUserControl(CandlestickChartViewModel viewModel)
-        {
-            DataContext = viewModel;
-            InitializeComponent();
-        }
+      DataContext = viewModel;
+      InitializeComponent();
     }
+  }
 }

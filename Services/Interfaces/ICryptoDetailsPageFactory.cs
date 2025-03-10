@@ -2,8 +2,8 @@
 
 namespace CryptoInfo.Services.Interfaces
 {
-    public interface ICryptoDetailsPageFactory
-    {
-        CryptoDetailsPage Create();
-    }
+  public interface ICryptoDetailsPageFactory
+  {
+    CryptoDetailsPage Create();
+  }
 }

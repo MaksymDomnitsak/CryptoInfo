@@ -2,8 +2,8 @@
 
 namespace CryptoInfo.Services.Interfaces
 {
-    public interface ICurrencyConvertPageFactory
-    {
-        CurrencyConvertPage Create();
-    }
+  public interface ICurrencyConvertPageFactory
+  {
+    CurrencyConvertPage Create();
+  }
 }

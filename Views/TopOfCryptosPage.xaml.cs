@@ -5,15 +5,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CryptoInfo.Views
 {
-    /// <summary>
-    /// Interaction logic for TopOfCryptosPage.xaml
-    /// </summary>
-    public partial class TopOfCryptosPage : Page
+  /// <summary>
+  /// Interaction logic for TopOfCryptosPage.xaml
+  /// </summary>
+  public partial class TopOfCryptosPage : Page
+  {
+    public TopOfCryptosPage(TopOfCryptosViewModel viewModel)
     {
-        public TopOfCryptosPage(TopOfCryptosViewModel viewModel)
-        {
-            DataContext = viewModel;
-            InitializeComponent();
-        }
+      DataContext = viewModel;
+      InitializeComponent();
     }
+  }
 }

@@ -4,15 +4,15 @@ using CryptoInfo.ViewModels;
 
 namespace CryptoInfo.Views
 {
-    /// <summary>
-    /// Interaction logic for CurrencyConvertPage.xaml
-    /// </summary>
-    public partial class CurrencyConvertPage : Page
+  /// <summary>
+  /// Interaction logic for CurrencyConvertPage.xaml
+  /// </summary>
+  public partial class CurrencyConvertPage : Page
+  {
+    public CurrencyConvertPage(CurrencyConvertViewModel viewModel)
     {
-        public CurrencyConvertPage(CurrencyConvertViewModel viewModel)
-        {
-            DataContext = viewModel;
-            InitializeComponent();
-        }
+      DataContext = viewModel;
+      InitializeComponent();
     }
+  }
 }
